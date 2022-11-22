@@ -12,6 +12,6 @@ steps:
   - --filename=kubernetes-all.yaml
   - --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME
   - --location=asia-northeast1
-  - --cluster=autopilot-cluster-2
+  - --cluster=$CLUSTER_NAME
   - --timeout=30m
   timeout: 1800s

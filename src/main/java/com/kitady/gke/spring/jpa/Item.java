@@ -16,52 +16,56 @@ import lombok.Data;
 public class Item {
 
   /** PK */
-  /** UUID(UUID) */
+  /** UUID */
   @PrimaryKey
   @Column(name = "UUID")
   private String uuid;
 
-  /** NAME(NAME) */
+  /** NAME */
   @Column(name = "NAME")
   private String name;
 
-  /** JP NAME(NAMEJP) */
+  /** NAMEJP */
   @Column(name = "NAMEJP")
   private String namejp;
 
-  /** TYPE(TYPE) */
+  /** BREWERY */
+  @Column(name = "BREWERY")
+  private String brewery;
+
+  /** TYPE */
   @Column(name = "TYPE")
   private String type;
 
-  /** DIV(DIV) */
+  /** DIV */
   @Column(name = "DIV")
   private String div;
 
-  /** ITEMNO(ITEMNO) */
+  /** ITEMNO */
   @Column(name = "ITEMNO")
   private Long itemno;
 
-  /** PRICE(PRICE) */
+  /** PRICE */
   @Column(name = "PRICE")
   private BigDecimal price;
 
-  /** EXPLANATION(EXPLANATION) */
+  /** EXPLANATION */
   @Column(name = "EXPLANATION")
   private String explanation;
 
-  /** REG_DATE(REGDATE) */
+  /** REG_DATE */
   @Column(name = "REGDATE")
   private Date regdate;
 
-  /** TIME_ZONE(TIMEZONE) */
+  /** TIME_ZONE */
   @Column(name = "TIMEZONE")
   private String timezone;
 
-  /** TIME_STMP(TIMESTMP) */
+  /** TIME_STMP */
   @Column(name = "TIMESTMP")
   private Timestamp timestmp;
 
-  /** VERSION(VERSION) */
+  /** VERSION */
   @Column(name = "VERSION")
   private Timestamp version;
 
