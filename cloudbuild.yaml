@@ -1,0 +1,22 @@
+steps:
+#Build inside Docker
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-f', 'Dockerfile', '--tag=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '.']
+#Docker push
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME']
+#Deploy GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args:
+  - run
+  - --filename=kubernetes-all.yaml
+  - --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME
+  - --location=asia-northeast1
+  - --cluster=autopilot-cluster-2
+  - --timeout=30m
+  timeout: 1800s
+#Deploy Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'gke-spring', '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '--region=asia-northeast1', '--allow-unauthenticated', '--update-env-vars=PROJECT_ID=$PROJECT_ID']
+#images: ['asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME']
