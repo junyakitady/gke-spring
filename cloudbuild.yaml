@@ -8,4 +8,4 @@ steps:
 #Deploy Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
-  args: ['run', 'deploy', 'gke-spring', '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '--region=asia-northeast1', '--allow-unauthenticated', '--update-env-vars=PROJECT_ID=$PROJECT_ID']
+  args: ['run', 'deploy', 'gke-spring', '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '--region=asia-northeast1', '--allow-unauthenticated', '--update-env-vars=PROJECT_ID=$PROJECT_ID',  '--service-account=spanner-client@$PROJECT_ID.iam.gserviceaccount.com']
