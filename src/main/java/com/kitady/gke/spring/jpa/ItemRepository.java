@@ -1,7 +1,7 @@
 package com.kitady.gke.spring.jpa;
 
-import com.google.cloud.spring.data.spanner.repository.SpannerRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface ItemRepository extends SpannerRepository<Item, String> {
+public interface ItemRepository extends CrudRepository<Item, String> {
 
 }

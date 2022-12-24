@@ -11,7 +11,7 @@ import com.kitady.gke.spring.common.BaseController;
 @RestController
 public class GetHostinfoController extends BaseController {
 
-  @GetMapping("/hostinfo")
+  @GetMapping({"/","/hostinfo"})
   public Map<String, String> execute() {
 
     final Map<String, String> map = gethostInfo();
