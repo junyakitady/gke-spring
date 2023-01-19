@@ -1,11 +1,11 @@
 steps:
 #Build inside Docker
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-f', 'Dockerfile', '--tag=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '.']
+  args: ['build', '-f', 'Dockerfile', '--tag=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-pos:$TAG_NAME', '.']
 #Docker push
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME']
+  args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-pos:$TAG_NAME']
 #Deploy Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
-  args: ['run', 'deploy', 'gke-spring', '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '--region=asia-northeast1', '--allow-unauthenticated', '--update-env-vars=PROJECT_ID=$PROJECT_ID',  '--service-account=spanner-client@$PROJECT_ID.iam.gserviceaccount.com']
+  args: ['run', 'deploy', 'gke-spring-pos', '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-pos:$TAG_NAME', '--region=asia-northeast1', '--allow-unauthenticated', '--set-secrets=JDBC_URL=jdbc_url:latest', '--service-account=db-client@$PROJECT_ID.iam.gserviceaccount.com', '--vpc-connector=projects/$PROJECT_ID/locations/asia-northeast1/connectors/serverless-vpc-access-jp']
