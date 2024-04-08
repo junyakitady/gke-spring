@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.1</version>
+    <version>3.2.4</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.kitady</groupId>
@@ -20,13 +20,13 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.5.1</version>
+      <version>42.7.3</version>
     </dependency>
     <!-- use Cloud SQL Connector -->
     <!-- <dependency>
       <groupId>com.google.cloud.sql</groupId>
       <artifactId>postgres-socket-factory</artifactId>
-      <version>1.8.2</version>
+      <version>1.17.1</version>
     </dependency> -->
 
     <dependency>
