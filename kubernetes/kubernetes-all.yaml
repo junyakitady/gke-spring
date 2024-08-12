@@ -26,7 +26,7 @@ spec:
       terminationGracePeriodSeconds: 25
       containers:
       - name: spring-front-container
-        image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring:latest
+        image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring-native:latest
         ports:
         - containerPort: 8080
         env:
@@ -50,7 +50,7 @@ spec:
             port: 8080
         resources:
           requests:
-            memory: "325Mi"
+            memory: "256Mi"
             cpu: "50m"
           limits:
             memory: "512Mi"
@@ -78,7 +78,7 @@ spec:
       terminationGracePeriodSeconds: 25
       containers:
       - name: spring-back-container
-        image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring:latest
+        image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring-native:latest
         ports:
         - containerPort: 8080
         env:
@@ -102,7 +102,7 @@ spec:
             port: 8080
         resources:
           requests:
-            memory: "325Mi"
+            memory: "256Mi"
             cpu: "50m"
           limits:
             memory: "512Mi"

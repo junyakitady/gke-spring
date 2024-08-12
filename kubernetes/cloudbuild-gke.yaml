@@ -1,18 +1,20 @@
 steps:
 #Build inside Docker
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-f', 'Dockerfile', '--tag=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME', '.']
+  args: ['build', '-f', 'Dockerfile.native', '--tag=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-native:$TAG_NAME', '.']
 #Docker push
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME']
+  args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-native:$TAG_NAME']
 #Deploy GKE
 - name: 'gcr.io/cloud-builders/gke-deploy'
   args:
   - run
   - --filename=kubernetes/kubernetes-all.yaml
-  - --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring:$TAG_NAME
+  - --image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/app/gke-spring-native:$TAG_NAME
   - --location=asia-northeast1
   - --cluster=$_CLUSTER_NAME
   - --timeout=30m
   timeout: 1800s
 timeout: 1800s
+options:
+  machineType: E2_HIGHCPU_32
