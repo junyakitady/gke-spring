@@ -13,7 +13,7 @@ import com.kitady.gke.spring.common.BaseController;
 /**
  * GET data from Spanner
  */
-@RegisterReflectionForBinding({com.fasterxml.jackson.databind.ser.std.SqlDateSerializer.class})
+@RegisterReflectionForBinding({tools.jackson.databind.ext.sql.JavaSqlDateSerializer.class})
 @RestController
 public class GetItemController extends BaseController {
 
