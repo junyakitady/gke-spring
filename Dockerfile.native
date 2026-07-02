@@ -1,21 +1,45 @@
-FROM ghcr.io/graalvm/native-image:22.3.1 as build
+# =========================================================================
+# フェーズ1: ビルドステージ (GraalVM JDK 25 搭載イメージ)
+# =========================================================================
+# Java 25をサポートする最新のGraalVMネイティブイメージ環境を使用
+FROM ghcr.io/graalvm/native-image-community:25 AS builder
 
-WORKDIR /workspace/app
+WORKDIR /builder
 
+# 1. 依存関係のキャッシュ（pom.xmlとラッパーを先にコピー）
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+
+# 依存ライブラリを事前にダウンロードして、ソースコード変更時のビルドを高速化
+RUN ./mvnw dependency:go-offline -B
+
+# 2. アプリケーションのビルド
 COPY src src
+# ネイティブプロファイルを有効化してコンパイル（テストはスキップ）
+RUN ./mvnw -Pnative native:compile -DskipTests
 
-ARG BUILD_ARG
-ENV PROJECT_ID=$BUILD_ARG
-RUN ./mvnw -Pnative clean native:compile -DskipTests=true
-#ENTRYPOINT ["./target/gke-spring"]
+# =========================================================================
+# フェーズ2: 最小限の実行環境 (ランタイムステージ)
+# =========================================================================
+FROM ubuntu:noble
 
-#FROM gcr.io/distroless/java-base-debian11:debug
-FROM eclipse-temurin:17-jre
-ARG BUILD_ARG
-ENV PROJECT_ID=$BUILD_ARG
 WORKDIR /app
-COPY --from=build /workspace/app/target/gke-spring .
+
+# 1. セキュリティ用の非rootユーザー・グループ（springuser）を作成
+#    -r: システムユーザーとして作成 / -m: ホームディレクトリを作成
+RUN groupadd -r springgroup && useradd -r -g springgroup -m -d /home/springuser springuser
+
+# 2. ビルドステージからバイナリをコピー
+COPY --from=builder /builder/target/gke-spring /app/gke-spring
+
+# 3. コピーしたバイナリの所有者を非rootユーザーに変更
+RUN chown -R springuser:springgroup /app && chmod +x /app/gke-spring
+
+# 4. 実行ユーザーを root から springuser に切り替え（これ以降のコマンドは非rootで実行されます）
+USER springuser:springgroup
+
+EXPOSE 8080
+
+# 実行
 ENTRYPOINT ["./gke-spring"]
