@@ -24,6 +24,13 @@ spec:
       nodeSelector:
         cloud.google.com/gke-spot: "true"
       terminationGracePeriodSeconds: 25
+      topologySpreadConstraints:
+      - maxSkew: 1                                 # ゾーン間の Pod 数の最大許容差（1 = ほぼ均等に分散）
+        topologyKey: "topology.kubernetes.io/zone" # ゾーン単位で分散することを指定
+        whenUnsatisfiable: DoNotSchedule           # 厳格
+        labelSelector:
+          matchLabels:
+            app: spring-front                      # 分散対象にする自分自身の Pod ラベルを指定      
       containers:
       - name: spring-front-container
         image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring-native:latest
@@ -76,6 +83,13 @@ spec:
       nodeSelector:
         cloud.google.com/gke-spot: "true"
       terminationGracePeriodSeconds: 25
+      topologySpreadConstraints:
+      - maxSkew: 1                                 # ゾーン間の Pod 数の最大許容差（1 = ほぼ均等に分散）
+        topologyKey: "topology.kubernetes.io/zone" # ゾーン単位で分散することを指定
+        whenUnsatisfiable: DoNotSchedule           # 厳格
+        labelSelector:
+          matchLabels:
+            app: spring-back                       # 分散対象にする自分自身の Pod ラベルを指定      
       containers:
       - name: spring-back-container
         image: asia-northeast1-docker.pkg.dev/noogler-2/app/gke-spring-native:latest
@@ -112,8 +126,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: spring-front-service
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}' # コンテナネイティブ負荷分散（NEG）を有効化
 spec:
-  type: LoadBalancer
+  type: ClusterIP # 外部公開不要なため LoadBalancerからClusterIP に変更
   selector:
     app: spring-front
   ports:
@@ -126,7 +142,7 @@ kind: Service
 metadata:
   name: spring-back-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP # 外部公開不要なため LoadBalancerからClusterIP に変更
   selector:
     app: spring-back
   ports:
@@ -138,3 +154,32 @@ spec:
     protocol: TCP
     port: 8080
     targetPort: 8080
+---
+# Gatewayリソースの定義
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external-http-gateway
+spec:
+  gatewayClassName: gke-l7-global-external-managed # グローバル外部L7ロードバランサを指定
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+---
+# HTTPRouteリソースの定義（ルーティング設定）
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: spring-front-route
+spec:
+  parentRefs:
+  - name: external-http-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: / # / 以下のすべてのアクセスをフロントエンドにルーティング
+    backendRefs:
+    - name: spring-front-service
+      port: 80
